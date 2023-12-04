@@ -1,6 +1,6 @@
 import React from 'react'
-import updateCalories from '../actions/updateCalories'
 import { SubmitCalories } from './SubmitCalories'
+import updateCalories from '@/actions/updateCalories'
 
 const CalorieNewForm = () => {
   return (

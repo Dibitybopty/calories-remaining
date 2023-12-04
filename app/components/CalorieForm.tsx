@@ -9,31 +9,38 @@ const CalorieForm = () => {
   let totalDays = [{
     day: 'Sunday',
     calories: 0,
-    changed: false
+    changed: false,
+    dayCode: 0
   }, {
     day: 'Monday',
     calories: 0,
-    changed: false
+    changed: false,
+    dayCode: 1
   }, {
     day: 'Tuesday',
     calories: 0,
-    changed: false
+    changed: false,
+    dayCode: 2
   }, {
     day: 'Wednesday',
     calories: 0,
-    changed: false
+    changed: false,
+    dayCode: 3
   }, {
     day: 'Thursday',
     calories: 0,
-    changed: false
+    changed: false,
+    dayCode: 4
   }, {
     day: 'Friday',
     calories: 0,
-    changed: false
+    changed: false,
+    dayCode: 5
   }, {
     day: 'Saturday',
     calories: 0,
-    changed: false
+    changed: false,
+    dayCode: 6
   }];
 
   var localStoredDays = '';
@@ -44,20 +51,22 @@ const CalorieForm = () => {
     day: string;
     calories: number;
     changed: boolean;
+    dayCode: number;
   }[] = [];
 
 
   const [startCalories, setStartCalories] = useState('');
   const [storedDays, setstoredDays] = useState('');
   let remainingCalories = parseInt(startCalories);
+  const [theDay, setTheDay] = useState(0);
   const myModal = useRef<HTMLDialogElement>(null);
+  const calModel = useRef<HTMLDialogElement>(null);
 
   const [totalCals, setTotalCals] = useState(remainingCalories);
   const [customCals, setCustomCals] = useState('');
   const [getDays, setGetDays] = useState(newDays);
-  const [cals, setCals] = useState(0);
-  let date = new Date();
-  let today = date.getDay();
+  // let date = new Date();
+  // let today = date.getDay();
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.localStorage) {
@@ -93,14 +102,18 @@ const CalorieForm = () => {
     }
   }, []);
 
-  const days = async () => {
+  const days = (day: number | null) => {
 
     let minusDays = 7;
 
     newDays = getDays;
 
-    newDays[today].calories = cals;
-    newDays[today].changed = true;
+    if (day !== null) {
+      newDays[day].calories = +customCals;
+      newDays[day].changed = true;
+    }
+
+
 
 
     //go through and minus the calories of the days already checked
@@ -129,7 +142,7 @@ const CalorieForm = () => {
 
   }
 
-  const updateCalories = () => {   
+  const updateCalories = () => {
 
     //multiply calories by 7 for week
     let multiCals: number = +customCals * 7;
@@ -145,10 +158,11 @@ const CalorieForm = () => {
     setGetDays(newDays);
 
     localStorage.setItem('storedDays', JSON.stringify(newDays));
-    localStorage.setItem('totalCals', customCals);
-    localStorage.setItem('remainingCals', customCals);
+    localStorage.setItem('totalCals', multiCals.toString());
+    localStorage.setItem('remainingCals', multiCals.toString());
     toast.success('Calories Updated!');
     myModal.current?.close();
+    calModel.current?.close();
 
     setStartCalories(multiCals.toString());
     setTotalCals(multiCals);
@@ -171,6 +185,20 @@ const CalorieForm = () => {
 
   }
 
+  const resetDay = (theDay: number) => {
+
+    newDays = getDays;
+
+    newDays[theDay].changed = false;
+
+    setGetDays(newDays);
+
+    days(null);
+
+    // console.log(getDays);
+
+  }
+
   return (
 
 
@@ -189,11 +217,17 @@ const CalorieForm = () => {
 
         <>
 
+
           <Toaster position={'bottom-center'} />
 
           <div className='flex flex-col items-start'>
-            <p className='text-center my-1'>Daily Calorie Goal:</p>
-            <input className='input input-bordered w-full max-w-xs' onChange={(e) => setCustomCals(e.target.value)}></input>
+
+            <input
+              className='input input-bordered w-full max-w-xs'
+              onChange={(e) => setCustomCals(e.target.value)}
+              placeholder='Daily Calorie Goal'>
+            </input>
+
             <button className='btn btn-secondary my-3 w-full max-w-xs' onClick={() => updateCalories()}>Set Calories</button>
           </div>
         </>
@@ -204,32 +238,43 @@ const CalorieForm = () => {
 
           <dialog ref={myModal}>
             <div className='flex border-2 flex-col p-10'>
-              <input className='input input-bordered' onChange={(e) => setCustomCals(e.target.value)}></input>
+              <input placeholder='Daily Goal' className='input input-bordered' onChange={(e) => setCustomCals(e.target.value)}></input>
               <button className='btn btn-secondary m-5' onClick={() => updateCalories()}>Set Calories</button>
               <button className='btn btn-secondary m-5' onClick={() => removeCookies()}>Reset All</button>
               <button className='btn btn-secondary m-5' onClick={() => myModal.current?.close()}>Close</button>
 
             </div>
           </dialog>
-          <button className='btn btn-secondary my-5' onClick={() => myModal.current?.showModal()}>⚙️ Settings</button>
+
+          <dialog ref={calModel}>
+            <div className='flex border-2 flex-col p-10'>
+              <input placeholder='Calories Consumed' className='input input-bordered' onChange={(e) => setCustomCals(e.target.value)}></input>
+              <button className='btn btn-secondary m-5' onClick={() => days(theDay)}>Submit</button>
+              <button className='btn btn-secondary m-5' onClick={() => resetDay(theDay)}>Reset Day</button>
+              <button className='btn btn-secondary m-5' onClick={() => calModel.current?.close()}>Close</button>
+
+            </div>
+          </dialog>
+
+          <button className='btn btn-secondary my-5 max-w-xs' onClick={() => myModal.current?.showModal()}>⚙️ Settings</button>
 
           <h1>Starting Calories: {startCalories}</h1>
           <h1>Calories Remaining: {totalCals}</h1>
 
-          <div className='flex py-5'>
+          {/* <div className='flex py-5'>
             <form action={days} className='flex'>
               <input className='input input-bordered w-full max-w-xs' onChange={(e) => setCals(parseInt(e.target.value))} />
               <button className='btn btn-secondary ml-5'>Submit</button>
             </form>
-          </div>
+          </div> */}
 
-          <div>
+          <div className='flex flex-col'>
 
 
             {getDays.map((days) => {
               return (
 
-                <h2 key={days.day}>{days.day}: {days.calories}</h2>
+                <button onClick={() => { calModel.current?.showModal(); setTheDay(days.dayCode); }} className='btn btn-secondary my-2 max-w-xs' key={days.day}>{days.day}: {days.calories} {days.changed ? '✔️' : ''}</button>
               )
             })}
           </div>

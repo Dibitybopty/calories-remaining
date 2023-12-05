@@ -140,6 +140,8 @@ const CalorieForm = () => {
     localStorage.setItem('storedDays', JSON.stringify(newDays));
     localStorage.setItem('remainingCals', JSON.stringify(remainingCalories));
 
+    calModel.current?.close();
+
   }
 
   const updateCalories = () => {

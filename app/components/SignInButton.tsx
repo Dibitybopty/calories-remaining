@@ -25,7 +25,7 @@ const SignInButton = () => {
 
 
     return (
-        <button onClick={() => signIn()}>Sign In</button>
+        <button className='btn btn-sm btn-secondary' onClick={() => signIn()}>Sign In</button>
 
     )
 }

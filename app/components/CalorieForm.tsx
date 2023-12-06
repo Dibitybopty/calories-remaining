@@ -257,6 +257,7 @@ const CalorieForm = () => {
 
             </div>
           </dialog>
+          <p>Click on a day to add your calories.</p>
 
           <button className='btn btn-secondary my-5 max-w-xs' onClick={() => myModal.current?.showModal()}>⚙️ Settings</button>
 
@@ -280,6 +281,11 @@ const CalorieForm = () => {
               )
             })}
           </div>
+
+          <p>Track your weekly calories.</p>
+          <p>If you go over (or under) your daily calories on any day,</p> 
+          <p>this tool will automatically recalculate your remaining days calories for the week.</p>
+          
         </>
   )
 }

@@ -103,6 +103,7 @@ export async function updateUserDay(state: any, formData: FormData) {
         
         //need to check through days that have been already updated
         //if the day hasn't been updated then spread the remaining calories to those days
+        //this is going to be annoying
 
         
         const someDays = getDays.split(',').slice(0, -1) ?? []

@@ -1,15 +1,19 @@
-'use client';
-
-import { signOut, signIn, useSession } from 'next-auth/react'
+import { authConfig } from '@/lib/auth'
+import { getServerSession } from 'next-auth'
 import React from 'react'
+import { SignOutButtonClient } from './SignOutButtonClient'
+import { SignInButtonClient } from './SignInButtonClient'
 
 
-const SignInButton = () => {
-    const { data: session } = useSession();
+const SignInButton = async () => {
+    // const { data: session } = useSession();
+    const session = await getServerSession(authConfig)
 
     if (session && session.user) {
+
+
         return (
-            <div className='flex gap-4 items-center '><img className='w-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2'
+            <div className='flex gap-4 items-center  '><img className='w-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2'
                     src={session.user.image as string}
                     alt="Picture of the author"
                 />
@@ -20,7 +24,8 @@ const SignInButton = () => {
                 
                 {/* <p>{session.user.image}</p> */}
                 {/* <p>{session.user.email}</p> */}
-                <button className='btn btn-sm btn-secondary' onClick={() => signOut()}>↪</button>
+                <SignOutButtonClient />
+                {/* <button className='btn btn-sm btn-secondary' onClick={() => createUser(session.user?.name as string, session.user?.email as string, session.user?.image as string)}>↪</button> */}
             </div>
         )
 
@@ -28,7 +33,7 @@ const SignInButton = () => {
 
 
     return (
-        <button className='btn btn-sm btn-secondary' onClick={() => signIn()}>Sign In</button>
+        <SignInButtonClient />
 
     )
 }

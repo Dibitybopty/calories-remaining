@@ -1,5 +1,6 @@
 "use client";
 
+import { useSession } from 'next-auth/react';
 import { useState, useRef, useEffect } from 'react';
 import { Toaster, toast } from 'sonner';
 
@@ -54,6 +55,7 @@ const CalorieForm = () => {
     dayCode: number;
   }[] = [];
 
+  const {data : session} = useSession();
 
   const [startCalories, setStartCalories] = useState('');
   const [storedDays, setstoredDays] = useState('');
@@ -203,6 +205,8 @@ const CalorieForm = () => {
 
   return (
 
+    session && session.user ? 
+
 
     storedDays.length < 1 ?
 
@@ -287,6 +291,15 @@ const CalorieForm = () => {
           <p>this tool will automatically recalculate your remaining days calories for the week.</p>
           
         </>
+
+        :
+
+        <>
+        <div>
+          <p>Please log in above.</p>
+        </div>
+        </>
+        
   )
 }
 

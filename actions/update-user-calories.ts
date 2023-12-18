@@ -77,11 +77,12 @@ export async function updateUserDay(state: any, formData: FormData) {
             },
         });
 
+        let getDays = checkDays?.Checked ?? '';
+
         //add days that have been checked by the user
         //needed to calculate through remaining days
 
         if (!checkDays?.Checked.includes(day)) {
-            let getDays = checkDays?.Checked;
 
             getDays += `${day}, `;
 
@@ -99,6 +100,22 @@ export async function updateUserDay(state: any, formData: FormData) {
 
             // return;
         }
+        
+        //need to check through days that have been already updated
+        //if the day hasn't been updated then spread the remaining calories to those days
+
+        
+        const someDays = getDays.split(',').slice(0, -1) ?? []
+        someDays?.forEach((val)=>{
+            
+        })
+
+        let startCals = checkDays?.caloriesTarget ?? 0;
+
+        startCals = startCals as number / (7 - someDays?.length)
+
+        console.log(Math.round(startCals))
+
 
         await db.calories.update({
 

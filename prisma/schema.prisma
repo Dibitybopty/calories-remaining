@@ -23,13 +23,13 @@ model Calories {
   id                Int     @id @default(autoincrement())
   caloriesTarget    Int
   caloriesRemaining Int
-  Sunday            Int
   Monday            Int
   Tuesday           Int
   Wednesday         Int
   Thursday          Int
   Friday            Int
   Saturday          Int
+  Sunday            Int
   Checked           String
   userEmail         String? @unique @db.VarChar(255)
   user              Users?  @relation(fields: [userEmail], references: [email])

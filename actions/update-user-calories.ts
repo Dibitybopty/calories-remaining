@@ -22,6 +22,7 @@ export async function updateUserCalories(state: any, formData: FormData) {
         Friday: z.number(),
         Saturday: z.number(),
         Sunday: z.number(),
+        Checked: z.string(),
     });
 
     const caloriesData = UpdateCalories.parse({
@@ -34,6 +35,7 @@ export async function updateUserCalories(state: any, formData: FormData) {
         Friday: +amount,
         Saturday: +amount,
         Sunday: +amount,
+        Checked: '',
     });
 
     await db.calories.update({
@@ -78,6 +80,11 @@ export async function updateUserDay(state: any, formData: FormData) {
         });
 
         let getDays = checkDays?.Checked ?? '';
+        let remainingCals = checkDays?.caloriesTarget ?? 0;
+
+        // remainingCals -= amount;
+
+
 
         //add days that have been checked by the user
         //needed to calculate through remaining days
@@ -100,23 +107,39 @@ export async function updateUserDay(state: any, formData: FormData) {
 
             // return;
         }
-        
+
         //need to check through days that have been already updated
         //if the day hasn't been updated then spread the remaining calories to those days
         //this is going to be annoying
 
-        
-        const someDays = getDays.split(',').slice(0, -1) ?? []
-        someDays?.forEach((val)=>{
-            
+
+        //split the days up to get days that have been already checked
+        const someDays = getDays.split(', ').slice(0, -1) ?? []
+        someDays?.forEach((val) => {
+            //if we're changing a day that's already changed then only minus the amount from user input
+            //otherwise minus all checked days
+            if(val === day){
+                remainingCals -= amount;
+            }else{
+                remainingCals -= Object.values(checkDays ?? 0).at(Object.keys(checkDays ?? 0).findIndex((ind) => ind === val));
+            }
+        })        
+
+        let spreadCals = remainingCals / (7 - someDays?.length)
+
+        //add the remaining calories to each day that hasn't had calories added to it
+        //Note: this will need to be also calculated in optimistic results for instant results on screen
+        Object.keys(checkDays ?? 0).map((val)=>{
+            //extract only days from db results
+            if(val.includes('day')){
+                if(!someDays.includes(val)){
+                    result.data[val] = spreadCals;
+                }
+            }
         })
 
-        let startCals = checkDays?.caloriesTarget ?? 0;
-
-        startCals = startCals as number / (7 - someDays?.length)
-
-        console.log(Math.round(startCals))
-
+        //add remaining calories to object  
+        result.data['caloriesRemaining'] = remainingCals;
 
         await db.calories.update({
 

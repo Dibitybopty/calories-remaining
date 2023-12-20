@@ -51,7 +51,7 @@ export async function updateUserCalories(state: any, formData: FormData) {
     revalidatePath('/DBCalories');
 }
 
-export async function updateUserDay(state: any, formData: FormData) {
+export async function updateUserDay(state: any, formData: FormData, reset?: boolean) {
 
     // console.log(reset)
 
@@ -63,6 +63,7 @@ export async function updateUserDay(state: any, formData: FormData) {
 
     const UpdateCalories = z.object({
         [day]: z.number().min(0, 'Number below zero.'),
+        // Checked: z.string(),
     });
 
     const result = UpdateCalories.safeParse({
@@ -80,8 +81,37 @@ export async function updateUserDay(state: any, formData: FormData) {
             },
         });
 
+
+
+
         let getDays = checkDays?.Checked ?? '';
         let remainingCals = checkDays?.caloriesTarget ?? 0;
+
+        //if resetting days then remove that day from checked in db
+
+        if (reset) {
+
+            let something = getDays.split(', ').slice(0, -1).filter(e=> e !==day)
+
+            getDays = '';
+            
+            something.forEach((val)=>{
+                
+                getDays += val + ', '
+            })
+
+            await db.calories.update({
+
+                where: {
+                    userEmail: email,
+                },
+                data: {
+                    Checked: getDays
+                }
+
+            });
+
+        }
 
         //add days that have been checked by the user
         //needed to calculate through remaining days
@@ -102,14 +132,8 @@ export async function updateUserDay(state: any, formData: FormData) {
 
             });
 
-            // return;
         }
 
-        // if (amount === 0) {
-        //     amount = checkDays?.caloriesTarget as number / 7
-
-        //     result.data[day] = amount;
-        // }
 
 
         //need to check through days that have been already updated
@@ -130,9 +154,12 @@ export async function updateUserDay(state: any, formData: FormData) {
 
         let spreadCals = remainingCals / (7 - someDays?.length)
 
+
+
         //add the remaining calories to each day that hasn't had calories added to it
         //Note: this will need to be also calculated in optimistic results for instant results on screen
         Object.keys(checkDays ?? 0).map((val) => {
+            // console.log(val)
             //extract only days from db results
             if (val.includes('day')) {
                 if (!someDays.includes(val)) {

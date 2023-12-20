@@ -193,13 +193,13 @@ const ButtonsComp = ({
                             addOptimisticCals({
                                 [day]: 'Resetting...'
                             });
-                            await updateUserDay(state, formData);
+                            await updateUserDay(state, formData, true);
 
                         }}>
                             <input readOnly hidden value={0} required type="number" name="amount" placeholder='Calories Consumed' className='input input-bordered m-5' ></input>
                             <input readOnly value={theDay} hidden name='day' placeholder='Calories Consumed' className='input input-bordered m-5' ></input>
                             <input readOnly value={user.userEmail} hidden name='email' placeholder='Calories Consumed' className='input input-bordered m-5' ></input>
-                            <button disabled className='btn btn-secondary m-5'>Reset Day</button>
+                            <button className='btn btn-secondary m-5'>Reset Day</button>
                         </form>
                         
                         <button className='btn btn-secondary m-5' onClick={() => closeModels()}>Close</button>

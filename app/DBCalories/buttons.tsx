@@ -5,6 +5,7 @@ import { useOptimistic, useRef, useState } from "react";
 import { useFormState } from "react-dom";
 import { Toaster } from "sonner";
 import DayButton from "../components/DaySubmitButton";
+import { CalCards } from "../components/CalCards";
 
 type UserCalories = {
 
@@ -32,7 +33,6 @@ const ButtonsComp = ({
 
     const myModal = useRef<HTMLDialogElement>(null);
     const calModel = useRef<HTMLDialogElement>(null);
-
 
     const [customCals, setCustomCals] = useState('');
     const [theDay, setTheDay] = useState('');
@@ -66,9 +66,11 @@ const ButtonsComp = ({
                     c[1] = Object.values(newData).at(0) as number;
                     
                 }else{
-                    c[1] = 'Calculating...'
+                    c[1] = '...'
                 }
             })
+
+            
 
             return oldState;
         }
@@ -132,7 +134,7 @@ const ButtonsComp = ({
                     }}>
                         <input required type="number" name="amount" placeholder='Daily Calories Goal' className='input input-bordered my-5' ></input>
                         <input readOnly value={user.userEmail} hidden name='email' placeholder='Calories Consumed' className='input input-bordered ' ></input>
-                        <button className='btn btn-secondary '>Set Calories</button>
+                        <button className='btn btn-neutral '>Set Calories</button>
                     </form>
                 </div>
             </>
@@ -158,15 +160,15 @@ const ButtonsComp = ({
                         }}>
                             <input required type="number" name="amount" placeholder='Daily Calories Goal' className='input input-bordered m-5' ></input>
                             <input readOnly value={user.userEmail} hidden name='email' placeholder='Calories Consumed' className='input input-bordered m-5' ></input>
-                            <button className='btn btn-secondary m-5'>Set Calories</button>
+                            <button className='btn btn-neutral m-5'>Set Calories</button>
                         </form>
                         <form className="flex flex-col" id='resetForm' action={formActionStartingCals}>
                             <input hidden readOnly value={0} type="number" name="amount" placeholder='Daily Calories Goal' className='input input-bordered m-5' ></input>
                             <input readOnly value={user.userEmail} hidden name='email' placeholder='Calories Consumed' className='input input-bordered m-5' ></input>
-                            <button className='btn btn-secondary m-5'>Reset All</button>
+                            <button className='btn btn-neutral m-5'>Reset All</button>
                         </form>
 
-                        <button className='btn btn-secondary m-5' onClick={() => closeModels()}>Close</button>
+                        <button className='btn btn-neutral m-5' onClick={() => closeModels()}>Close</button>
 
                     </div>
                 </dialog>
@@ -191,7 +193,7 @@ const ButtonsComp = ({
                         <form id="resetForm" className="flex flex-col" action={async formData => {
                             const day = formData.get('day') as string;
                             addOptimisticCals({
-                                [day]: 'Resetting...'
+                                [day]: '...'
                             });
                             await updateUserDay(state, formData, true);
 
@@ -199,16 +201,16 @@ const ButtonsComp = ({
                             <input readOnly hidden value={0} required type="number" name="amount" placeholder='Calories Consumed' className='input input-bordered m-5' ></input>
                             <input readOnly value={theDay} hidden name='day' placeholder='Calories Consumed' className='input input-bordered m-5' ></input>
                             <input readOnly value={user.userEmail} hidden name='email' placeholder='Calories Consumed' className='input input-bordered m-5' ></input>
-                            <button className='btn btn-secondary m-5'>Reset Day</button>
+                            <button className='btn btn-neutral m-5'>Reset Day</button>
                         </form>
                         
-                        <button className='btn btn-secondary m-5' onClick={() => closeModels()}>Close</button>
+                        <button className='btn btn-neutral m-5' onClick={() => closeModels()}>Close</button>
 
                     </div>
                 </dialog>
                 <p>Click on a day to add your calories.</p>
 
-                <button className='btn btn-secondary my-5 max-w-xs' onClick={() => myModal.current?.showModal()}>⚙️ Settings</button>
+                <button className='btn btn-neutral my-5 max-w-xs' onClick={() => myModal.current?.showModal()}>⚙️ Settings</button>
 
                 <h1>Starting Calories: {user.caloriesTarget}</h1>
                 <h1>Calories Remaining: {user.caloriesRemaining}</h1>
@@ -217,16 +219,21 @@ const ButtonsComp = ({
 
                     {
                         
-                        optimisticCals.map((val) => {                          
+                        optimisticCals.map((val) => {    
+                            // console.log(val)                      
                           
                             if (val[0].includes('day')) {
                                 return (
                                     
+                                <div key={val[0]} className="stats shadow my-1 max-w-xs bg-neutral" onClick={() => { calModel.current?.showModal(); setTheDay(val[0]) }}>
+                                    <CalCards user={val as any} getDay={tempDay}  />
+                                    </div>
                                     
-                                    <button key={val[0]} className='btn btn-secondary my-2 max-w-xs' onClick={() => { calModel.current?.showModal(); setTheDay(val[0]) }} >
-                                        {val[0]}: {tempDay.includes(val[0]) ? `${val[1]} ✔️ `: val[1]}
+                                    
+                                    // <button key={val[0]} className='btn btn-neutral my-2 max-w-xs' onClick={() => { calModel.current?.showModal(); setTheDay(val[0]) }} >
+                                    //     {val[0]}: {tempDay.includes(val[0]) ? `${val[1]} ✔️ `: val[1]}
                                         
-                                    </button>
+                                    // </button>
                                     
 
                                 )

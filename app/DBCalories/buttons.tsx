@@ -130,6 +130,7 @@ const ButtonsComp = ({
                             Saturday: +amount as number,
                             Sunday: +amount as number,
                         });
+                        closeModels();
                         await updateUserCalories(stateCals, formData);
 
                     }}>
@@ -156,7 +157,8 @@ const ButtonsComp = ({
                                 Friday: +amount as number,
                                 Saturday: +amount as number,
                                 Sunday: +amount as number,
-                            });                            
+                            });
+                            closeModels();                            
                             await updateUserCalories(stateCals, formData);
                             
                         }}>

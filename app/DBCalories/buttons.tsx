@@ -51,8 +51,9 @@ const ButtonsComp = ({
             //replaces day in array with temp data from newData (gotten from form submit)
             //first checks if it's a reset of all days or just a change to one
 
-            if(Object.entries(newData).length > 1){
-                oldState.map((c)=>{
+            if (Object.entries(newData).length > 1) {
+                // console.log('wtf')
+                oldState.map((c) => {
                     c[1] = Object.values(newData).at(0) as number;
                 })
 
@@ -60,10 +61,12 @@ const ButtonsComp = ({
             }
 
             oldState.map((c) => {
-                // console.log(c[1])
+                // console.log(c)
                 if (c[0] === Object.keys(newData).at(0)) {
                     c[1] = Object.values(newData).at(0) as number;
-                    return;
+                    
+                }else{
+                    c[1] = 'Calculating...'
                 }
             })
 
@@ -74,6 +77,14 @@ const ButtonsComp = ({
 
     // console.log(optimisticCals)
 
+    //get days to add checked emote on days with entries
+    let tempDay = '';
+
+    optimisticCals.map((val) => {
+        if(Object.entries(val).at(1)?.[1]?.toString().includes('day')){
+            tempDay += Object.entries(val).at(1)?.[1]?.toString()
+        }
+    })
 
 
     function closeModels() {
@@ -106,13 +117,23 @@ const ButtonsComp = ({
 
                 <div className='flex flex-col items-start'>
 
-                    <input
-                        className='input input-bordered w-full max-w-xs'
-                        onChange={(e) => setCustomCals(e.target.value)}
-                        placeholder='Daily Calorie Goal'>
-                    </input>
-
-                    <button className='btn btn-secondary my-3 w-full max-w-xs' onClick={() => updateCalories()}>Set Calories</button>
+                    <form id='startCals' className="flex flex-col" action={async formData => {
+                        const amount = formData.get('amount') ?? '0';
+                        addOptimisticCals({
+                            Monday: +amount as number,
+                            Tuesday: +amount as number,
+                            Wednesday: +amount as number,
+                            Thursday: +amount as number,
+                            Friday: +amount as number,
+                            Saturday: +amount as number,
+                            Sunday: +amount as number,
+                        });
+                        await updateUserCalories(stateCals, formData);
+                    }}>
+                        <input required type="number" name="amount" placeholder='Daily Calories Goal' className='input input-bordered my-5' ></input>
+                        <input readOnly value={user.userEmail} hidden name='email' placeholder='Calories Consumed' className='input input-bordered ' ></input>
+                        <button className='btn btn-secondary '>Set Calories</button>
+                    </form>
                 </div>
             </>
             :
@@ -122,7 +143,7 @@ const ButtonsComp = ({
 
                 <dialog ref={myModal}>
                     <div className='flex border-2 flex-col p-10'>
-                        <form className="flex flex-col" action={async formData => {
+                        <form id='legitUpdateCals' className="flex flex-col" action={async formData => {
                             const amount = formData.get('amount') ?? '0';
                             addOptimisticCals({
                                 Monday: +amount as number,
@@ -136,11 +157,15 @@ const ButtonsComp = ({
                             await updateUserCalories(stateCals, formData);
                         }}>
                             <input required type="number" name="amount" placeholder='Daily Calories Goal' className='input input-bordered m-5' ></input>
-
                             <input readOnly value={user.userEmail} hidden name='email' placeholder='Calories Consumed' className='input input-bordered m-5' ></input>
                             <button className='btn btn-secondary m-5'>Set Calories</button>
                         </form>
-                        <button className='btn btn-secondary m-5' onClick={() => removeCookies()}>Reset All</button>
+                        <form className="flex flex-col" id='resetForm' action={formActionStartingCals}>
+                            <input hidden readOnly value={0} type="number" name="amount" placeholder='Daily Calories Goal' className='input input-bordered m-5' ></input>
+                            <input readOnly value={user.userEmail} hidden name='email' placeholder='Calories Consumed' className='input input-bordered m-5' ></input>
+                            <button className='btn btn-secondary m-5'>Reset All</button>
+                        </form>
+
                         <button className='btn btn-secondary m-5' onClick={() => closeModels()}>Close</button>
 
                     </div>
@@ -148,21 +173,35 @@ const ButtonsComp = ({
 
                 <dialog ref={calModel}>
                     <div className='flex border-2 flex-col p-5'>
-                        <form className="flex flex-col" action={async formData => {
-                            const amount = formData.get('calsDayAmount') ?? '0';
-                            const day = formData.get('calsDay') as string;
+                        <form id="singleSub" className="flex flex-col" action={async formData => {
+                            const amount = formData.get('amount') ?? '0';
+                            const day = formData.get('day') as string;
                             addOptimisticCals({
                                 [day]: +amount as number
                             });
                             await updateUserDay(state, formData);
 
                         }}>
-                            <input required type="number" name="calsDayAmount" placeholder='Calories Consumed' className='input input-bordered m-5' ></input>
-                            <input readOnly value={theDay} hidden name='calsDay' placeholder='Calories Consumed' className='input input-bordered m-5' ></input>
-                            <input readOnly value={user.userEmail} hidden name='calsDayEmail' placeholder='Calories Consumed' className='input input-bordered m-5' ></input>
+                            <input required type="number" name="amount" placeholder='Calories Consumed' className='input input-bordered m-5' ></input>
+                            <input readOnly value={theDay} hidden name='day' placeholder='Calories Consumed' className='input input-bordered m-5' ></input>
+                            <input readOnly value={user.userEmail} hidden name='email' placeholder='Calories Consumed' className='input input-bordered m-5' ></input>
                             <DayButton />
                         </form>
-                        <button className='btn btn-secondary m-5' onClick={() => resetDay()}>Reset Day</button>
+
+                        <form id="resetForm" className="flex flex-col" action={async formData => {
+                            const day = formData.get('day') as string;
+                            addOptimisticCals({
+                                [day]: 'Resetting...'
+                            });
+                            await updateUserDay(state, formData);
+
+                        }}>
+                            <input readOnly hidden value={0} required type="number" name="amount" placeholder='Calories Consumed' className='input input-bordered m-5' ></input>
+                            <input readOnly value={theDay} hidden name='day' placeholder='Calories Consumed' className='input input-bordered m-5' ></input>
+                            <input readOnly value={user.userEmail} hidden name='email' placeholder='Calories Consumed' className='input input-bordered m-5' ></input>
+                            <button disabled className='btn btn-secondary m-5'>Reset Day</button>
+                        </form>
+                        
                         <button className='btn btn-secondary m-5' onClick={() => closeModels()}>Close</button>
 
                     </div>
@@ -177,13 +216,18 @@ const ButtonsComp = ({
                 <div className='flex flex-col'>
 
                     {
-                        optimisticCals.map((val) => {
-
+                        
+                        optimisticCals.map((val) => {                          
+                          
                             if (val[0].includes('day')) {
                                 return (
+                                    
+                                    
                                     <button key={val[0]} className='btn btn-secondary my-2 max-w-xs' onClick={() => { calModel.current?.showModal(); setTheDay(val[0]) }} >
-                                        {val[0]}: {val[1]}
+                                        {val[0]}: {tempDay.includes(val[0]) ? `${val[1]} ✔️ `: val[1]}
+                                        
                                     </button>
+                                    
 
                                 )
 

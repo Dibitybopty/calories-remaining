@@ -131,6 +131,7 @@ const ButtonsComp = ({
                             Sunday: +amount as number,
                         });
                         await updateUserCalories(stateCals, formData);
+
                     }}>
                         <input required type="number" name="amount" placeholder='Daily Calories Goal' className='input input-bordered my-5' ></input>
                         <input readOnly value={user.userEmail} hidden name='email' placeholder='Calories Consumed' className='input input-bordered ' ></input>
@@ -155,8 +156,9 @@ const ButtonsComp = ({
                                 Friday: +amount as number,
                                 Saturday: +amount as number,
                                 Sunday: +amount as number,
-                            });
+                            });                            
                             await updateUserCalories(stateCals, formData);
+                            
                         }}>
                             <input required type="number" name="amount" placeholder='Daily Calories Goal' className='input input-bordered m-5' ></input>
                             <input readOnly value={user.userEmail} hidden name='email' placeholder='Calories Consumed' className='input input-bordered m-5' ></input>
@@ -181,6 +183,7 @@ const ButtonsComp = ({
                             addOptimisticCals({
                                 [day]: +amount as number
                             });
+                            closeModels();
                             await updateUserDay(state, formData);
 
                         }}>
@@ -195,6 +198,7 @@ const ButtonsComp = ({
                             addOptimisticCals({
                                 [day]: '...'
                             });
+                            closeModels();
                             await updateUserDay(state, formData, true);
 
                         }}>
@@ -225,7 +229,7 @@ const ButtonsComp = ({
                             if (val[0].includes('day')) {
                                 return (
                                     
-                                <div key={val[0]} className="stats shadow my-1 max-w-xs bg-neutral" onClick={() => { calModel.current?.showModal(); setTheDay(val[0]) }}>
+                                <div key={val[0]} className="stats shadow my-1  bg-neutral" onClick={() => { calModel.current?.showModal(); setTheDay(val[0]) }}>
                                     <CalCards user={val as any} getDay={tempDay}  />
                                     </div>
                                     

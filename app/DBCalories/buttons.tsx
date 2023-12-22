@@ -5,7 +5,7 @@ import { useOptimistic, useRef, useState } from "react";
 import { useFormState } from "react-dom";
 import { Toaster } from "sonner";
 import DayButton from "../components/DaySubmitButton";
-import { CalCards } from "../components/CalCards";
+import  CalCards  from "../components/CalCards";
 
 type UserCalories = {
 

@@ -1,8 +1,14 @@
 import { PiFireDuotone } from "react-icons/pi";
 
-export const CalCards = ({user, getDay}:any) => {
+export default function CalCards({
+    user,
+    getDay,
+}: {
+    user: [string, string | number | null],
+    getDay: string
+}) {
 
-    const days:string = getDay;
+    const days: string = getDay;
 
     return (
         <>
@@ -14,7 +20,7 @@ export const CalCards = ({user, getDay}:any) => {
 
 
                         <div className="stat-action ">
-                            
+
                             <button className="btn">Update</button>
 
                         </div>
@@ -23,9 +29,9 @@ export const CalCards = ({user, getDay}:any) => {
 
                 </div>
                 <div className="stat-title text-secondary">{user[0]}</div>
-                <div className="stat-value flex items-center justify-between">{days.includes(user[0]) ? <>{user[1]} <div className="text-secondary"><PiFireDuotone/></div>  </>  : user[1]}</div>
+                <div className="stat-value flex items-center justify-between">{days.includes(user[0]) ? <>{user[1]} <div className="text-secondary"><PiFireDuotone /></div>  </> : user[1]}</div>
                 <div className="stat-title">Calories consumed</div>
-                
+
             </div>
 
 

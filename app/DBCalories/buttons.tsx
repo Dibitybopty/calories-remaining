@@ -231,8 +231,8 @@ const ButtonsComp = ({
                             if (val[0].includes('day')) {
                                 return (
                                     
-                                <div key={val[0]} className="stats shadow my-1  bg-neutral" onClick={() => { calModel.current?.showModal(); setTheDay(val[0]) }}>
-                                    <CalCards user={val as any} getDay={tempDay}  />
+                                <div key={val[0]} className="stats shadow my-1 hover:cursor-pointer bg-neutral" onClick={() => { calModel.current?.showModal(); setTheDay(val[0]) }}>
+                                    <CalCards user={val} getDay={tempDay}  />
                                     </div>
                                     
                                     
